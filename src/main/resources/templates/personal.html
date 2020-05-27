@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="icon" href="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png">
+  <link href="https://fonts.googleapis.com/css?family=Lora&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/animate.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+
+  <!-- Bootstrap and JQuery -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="js/cart.js"></script>
+
+
+
+  <title>HookahShop</title>
+
+</head>
+
+<body>
+  <div class="main-wrapper">
+    <div class="wrapper sticky-top">
+      <nav class="navbar  navbar-expand-lg navbar-light bg-white">
+        <!-- Navbar text -->
+        <a class="navbar-brand text-dark d-flex align-items-center " href="/">
+          <img src="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png" width="40" height="40" class="d-inline-block align-top mr-1" alt="HookahShop">
+          <span class="d-inline-block m-0">HookahShop</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbars -->
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+          <ul class="nav mr-auto mx-auto justify-content-center" th:each="catalog : ${catalogs}">
+
+            <!-- For items without subcatalog -->
+            <li th:if="${catalog.getSubCatalogList() == null || catalog.getSubCatalogList().size() == 1}" class="nav-item dropdown text">
+              <a class="nav-link text-dark" th:text="${catalog.getName()}" th:href="'/shop?type='+${catalog.getName()}">--- NAME ---</a>
+            </li>
+
+            <!-- For items with subcatalog enable -->
+            <li th:if="${catalog.getSubCatalogList() != null && catalog.getSubCatalogList().size() > 1}" class="nav-item dropdown">
+              <a class="nav-link text-dark" style="cursor: pointer;" th:text="${catalog.getName()}"
+                 data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">-- NAME -- </a>
+              <div class="dropdown-menu">
+                <div class="items" th:each="subcatalog : ${catalog.getSubCatalogList()}">
+                  <a class="dropdown-item" th:text="${subcatalog.getSubname()}"
+                     th:href="'/shop?type='+${subcatalog.getSubname()}">-- SUBNAME -- </a>
+                </div>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Navbar right items -->
+          <ul class="nav justify-content-center align-items-center mt-2 mb-2">
+            <li class="nav-item">
+              <a href="/auth" class="text-center pt-2 pb-2 mr-2"><i class="fas fa-user-circle fa-2x text-primary mx-3"></i></a>
+            </li>
+          </ul>
+          <ul class="nav justify-content-center align-items-center mt-2 mb-2">
+            <li class="nav-item">
+              <div class="dropdown">
+                <button type="button" class="btn btn-primary dropdown-toggle pt-2 pb-2 mr-2"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-shopping-cart mx-3"></i>
+                  <span id="count"><!-- Simple price counter --></span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-right dropdown-wide dropdown-notification" id="dropdown">
+                  <div class="dropdown-header"><h6 class="m-2">Кошик</h6></div>
+                  <legend></legend>
+                  <div class="conteiner">
+                    <div id="show-cart">
+                      <h6 class="text-center">Ваш кошик порожній &#x1f61f;</h6>
+                      <!-- Generated Script -->
+                      <legend></legend>
+                    </div>
+                    <div class="dropdown-footer text-right" id="total-cart">
+                      <!--  <a href="/payment.html" class="btn btn-primary float-right mb-2"><span class="toOrder"></span></a>
+                      <span class="float-left">Total: <span</span>-->
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- On dropdown click items fix. Now dd doesn't close on click -->
+              <script>document.getElementById("dropdown").addEventListener('click', function (event) {event.stopPropagation();});</script>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div id="note" class="fadeout">
+        Вибачте, але даного товару вже немає на складі!
+      </div>
+    </div>
+
+    <div class="container p-3 mt-3">
+      <div class="splitter">
+        <div class="row">
+          <div class="col-md-6">
+            <span>
+              <a href="/" class="text-decoration-none">Магазин</a>
+              <i class="fas fa-caret-right ml-2 mr-2"></i>
+              <a href="/personal" class="text-decoration-none">Особистий кабінет</a>
+            </span>
+          </div>
+          <div class="col-md-6 text-right">
+            <a th:if="${isAdmin}" href="/admin/editor" class="btn btn-success ml-2"><i class="fas fa-edit"></i>Редагування товарів</a>
+            <a th:if="${isAdmin}" href="/admin/excel/getExcelOrders" class="btn btn-success ml-2"><i class="fas fa-file-excel mr-1"></i>Замовлення</a>
+            <a th:if="${isAdmin}" href="/admin/excel/getExcelProducts" class="btn btn-success ml-2"><i class="fas fa-file-excel mr-1"></i>Товари</a>
+            <a href="/logout" class="btn btn-danger ml-2">Вихід</a>
+            <br>
+            <input th:if="${isAdmin}" type="number" class="form-control search mt-3 mb-3 w-50 ml-auto"  placeholder="Пошук по замовленню">
+
+            <script>
+              $('document').ready(function () {
+                $(".search").on('keyup', function (e) {
+                  var value = $(".search").val();
+                  console.log(value);
+                  if (e.keyCode === 13) {
+                    window.location.href = "/admin/order/search?id="+value;
+                  }
+                });
+              })
+            </script>
+          </div>
+        </div>
+      </div>
+
+      <h4 th:if="${error}" class="text-center text-danger">Замовлення з даним ID відсутнє або перебуває в кошику</h4>
+
+      <div class="m-0 p-0 d-flex align-items-center justify-content-center"
+           th:if="${user.getLikedProduct().size() <= 0 && orders.size() <= 0}">
+        <div class="notfound">
+          <img src="https://res.cloudinary.com/hxntglbil/image/upload/v1590323675/icons/cart___ivwsxe.png">
+          <h2>Історія ваших замовлень порожня!<br> Мержчій зайдіть в каталог, щоб замовити собі щось! &#x1F917</h2>
+        </div>
+      </div>
+
+      <div class="orders-wrapper" th:if="${orders.size() > 0}">
+
+        <!-- ADMIN / NOT ADMIN TITLE -->
+        <h3 th:if="${!isAdmin}" class="text-center text-uppercase m-4">Історія замовлень</h3>
+        <h3 th:if="${isAdmin}" class="text-center text-uppercase m-4">Замовлення користувачів</h3>
+
+      <div class="user-history" th:each="order : ${orders}">
+        <div th:id="'wrapper'+${order.getId()}">
+          <div class="card m-2">
+             <a class="card-header text-dark w-100 text-decoration-none bg-white" data-toggle="collapse"
+                 th:href="'#order'+${order.getId()}">
+                Замовлення № <span th:text="${order.getId()}+ ' (від ' + ${order.getDate()} + ')'"></span>
+
+               <span th:if="${order.getStatus().getStatusName().equals('Виконано')}"> <i class="fas fa-check"></i></span>
+
+               <span th:if="${order.getStatus().getStatusName().equals('Відмінено')}"> <i class="fas fa-minus"></i></span>
+
+               <i class="fas fa-sort-down float-right"></i>
+             </a>
+            <div th:id="'order'+${order.getId()}" class="collapse show">
+              <div class="card-body table-responsive">
+                <table class="table">
+                  <thead>
+                  <tr>
+                    <th class="text-center"></th>
+                    <th class="text-center">Назва</th>
+                    <th class="text-center">Кількість</th>
+                    <th class="text-center">Ціна</th>
+                    <th class="text-center">Разом</th>
+                  </tr>
+                    <tr th:each="product : ${order.getCart().getSelectedItems()}">
+                      <th  class="text-center">
+                        <a th:href="'/shop/'+${product.getShopProduct().getId()}">
+                        <img th:src="${product.getShopProduct().getImageUrl()}" class="text-center" width="100px" height="100px">
+                        </a>
+                      </th>
+                      <th  class="text-center" th:text="${product.getShopProduct().getName()}">-- PRODUCT NAME --</th>
+                      <th  class="text-center" th:text="${product.getNumber()}">-- ORDERED NUMBER --</th>
+                      <th  class="text-center" th:text="${product.getShopProduct().getPrice()}+' грн'">-- PRODUCT PRICE --</th>
+                      <th  class="text-center" th:text="${product.getShopProduct().getPrice() * product.getNumber()}+' грн'">-- SUMMARY PRICE --</th>
+
+                    </tr>
+                  </thead>
+                </table>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="text-left" th:text="'Замовник: ' + ${order.getName() + ' ' + order.getSurname()}"></p>
+                    <p class="text-left" th:text="'Адреса: ' + ${order.getAddress().getAddress()}"></p>
+                    <p class="text-left" th:text="'Телефон: ' + ${order.getPhone()}"></p>
+                    <p class="text-left" th:text="'Статус доставки: ' + ${order.getStatus().getStatusName()}"></p>
+                    <p class="text-left" th:text="'Статус оплати : ' + ${order.getIsPaid() ? 'Оплачено' : 'Оплата при отриманні'}"></p>
+                  </div>
+                  <div class="col-md-6 text-right">
+                    <p class="ml-auto" th:text="'Всього: '+${order.getSummary()}+' грн'"></p>
+                    <form th:if="${isAdmin}" th:action="'/admin/order/change-order/' + ${order.getId()}" method="POST">
+                      <div class="form-group">
+                        <select class="form-control w-50 ml-auto mr-2 mt-2 mb-2" id="select1" name="select1">
+                          <option th:each="oneStatus : ${status}"
+                                  th:text="${oneStatus.getStatusName()}"
+                                  th:value="${oneStatus.getId()}"
+                                  th:selected="${order.getStatus().getStatusName().equals(oneStatus.getStatusName())}"></option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <select class="form-control w-50 ml-auto mr-2 mt-2 mb-2" id="select2" name="select2">
+                          <option value='false' th:selected="${!order.getIsPaid()}">Оплата при отриманні</option>
+                          <option value='true' th:selected="${order.getIsPaid()}">Оплачено</option>
+                        </select>
+                      </div>
+                      <button class="btn btn-success mr-2" type="submit">Змінити</button>
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="liked-wrapper" th:if="${user.getLikedProduct().size() > 0}">
+      <h3 class="text-center text-uppercase m-5" >Список бажань</h3>
+      <div class="user-wanted-list">
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12  mb-2 mt-2 p-1" th:each="like : ${user.getLikedProduct()}">
+              <div class="card m-auto">
+                <div class="content text-center">
+                  <div class="product-icon">
+                    <div class="product-icon-wrap">
+                      <form th:action="'/personal/delete-liked/'+${like.getId()}" method="POST">
+                      <button type="submit" class="btn btn-danger"><i class="fas fa-minus-circle"></i></button>
+                      </form>
+                    </div>
+                  </div>
+                  <a th:href="'/shop/'+${like.getId()}" class="text-decoration-none text-dark">
+                    <img class="img-item mr-auto ml-auto" th:src="${like.getImageUrl()}" alt="">
+                    <div class="card-body">
+                      <h5 class="card-text text-center" th:text="${like.getName()}">Кальян Yahya SY07</h5>
+                      <legend></legend>
+                      <h5 class="card-text text-center" th:text="${like.getPrice()}+' грн'">150.0 грн</h5>
+                    </div>
+                  </a>
+                  <button th:data-name="${like.getName()}"
+                          th:data-price="${like.getPrice()}"
+                          th:data-img="${like.getImageUrl()}"
+                          th:data-id="${like.getId()}"
+                          class="btn btn-primary w-100 item-add " th:disabled="${like.getAmount() <= 0}">Замовити</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+
+
+
+    <!-- Footer -->
+    <footer id="footer" class="site-footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 col-sm-12 col-md-6">
+            <h6>Про нас</h6>
+            <p class="text-justify">HookahShop магазин кальянів, комплектуючих, аксесуарів,
+              тощо.<br>
+              Кальян — прилад для куріння, що дозволяє фільтрувати і охолоджувати дим, що
+              вдихається. Роль фільтра відіграє посудина з водою, вином чи іншою рідиною. У
+              посудину вставлена курильна
+              чашка,
+              поєднана з трубкою, кінець якої йде під воду. Вище рівня води з посудини
+              відходить ще одна трубка, до якої
+              прикріплений
+              цибух. При курінні в посудині кальяну створюється негативний тиск, завдяки чому
+              дим піднімається крізь
+              рідину
+              і через
+              трубку з цибухом потрапляє в легені курця.
+            </p>
+          </div>
+
+          <div class="col-lg-3 col-xs-12 col-md-3">
+            <h6>Категорії</h6>
+            <ul class="footer-links">
+              <li><a href="/shop?type=Кальяни">Кальяни</a></li>
+              <li><a href="/shop?type=Колби">Комплектуючі</a></li>
+              <li><a href="/shop?type=Регулятор жару">Аксесуари</a></li>
+              <li><a href="/shop?type=Уголь">Матеріали</a></li>
+              <li><a href="/personal">Особистий кабінет</a></li>
+              <li><a href="/order">Оформлення замовлення</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+            <style>
+              #map {
+                height: 100%;
+                width: 100%;
+              }
+            </style>
+            <div id="map"></div>
+            <script>
+              function initMap() {
+                var uluru = { lat: 50.381426, lng: 30.496706 };
+                var map = new google.maps.Map(
+                        document.getElementById('map'), { zoom: 17, center: uluru });
+                var marker = new google.maps.Marker({ position: uluru, map: map });
+              }
+            </script>
+            <script async defer
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARBiMgr_hoUyZI4psDdTJ06cpraxNse3Y&callback=initMap">
+            </script>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row mt-4">
+          <div class="col-md-8 col-sm-4 col-xs-12">
+            <p class="copyright-text">Copyright &copy; 2020 All Rights Reserved.</p>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <ul class="social-icons">
+              <li><a class="facebook" href="#"><i class="fab fa-facebook"></i></a></li>
+              <li><a class="twitter" href="#"><i class="fab fa-twitter"></i></a></li>
+              <li><a class="dribbble" href="#"><i class="fab fa-dribbble"></i></a></li>
+              <li><a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+
+
+  </div>
+
+    
+</body>
+
+</html>

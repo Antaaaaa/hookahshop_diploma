@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="icon" href="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png">
+        <link href="https://fonts.googleapis.com/css?family=Lora&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+        <link rel="stylesheet" href="/css/animate.css">
+        <link rel="stylesheet" href="/css/main.css">
+        <title>HookahShop</title>
+
+        <!-- Bootstrap and JQuery -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="js/cart.js"></script>
+
+    </head>
+<body>
+<div class="main-wrapper">
+        <div class="wrapper sticky-top">
+                <nav class="navbar  navbar-expand-lg navbar-light bg-white">
+                        <!-- Navbar text -->
+                        <a class="navbar-brand text-dark d-flex align-items-center " href="/">
+                                <img src="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png" width="40" height="40" class="d-inline-block align-top mr-1" alt="HookahShop">
+                                <span class="d-inline-block m-0">HookahShop</span>
+                        </a>
+
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+                                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                        </button>
+
+                        <!-- Navbars -->
+                        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+                                <ul class="nav mr-auto mx-auto justify-content-center" th:each="catalog : ${catalogs}">
+
+                                        <!-- For items without subcatalog -->
+                                        <li th:if="${catalog.getSubCatalogList() == null || catalog.getSubCatalogList().size() == 1}" class="nav-item dropdown text">
+                                                <a class="nav-link text-dark" th:text="${catalog.getName()}" th:href="'/shop?type='+${catalog.getName()}">--- NAME ---</a>
+                                        </li>
+
+                                        <!-- For items with subcatalog enable -->
+                                        <li th:if="${catalog.getSubCatalogList() != null && catalog.getSubCatalogList().size() > 1}" class="nav-item dropdown">
+                                                <a class="nav-link text-dark" style="cursor: pointer;" th:text="${catalog.getName()}"
+                                                   data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">-- NAME -- </a>
+                                                <div class="dropdown-menu">
+                                                        <div class="items" th:each="subcatalog : ${catalog.getSubCatalogList()}">
+                                                                <a class="dropdown-item" th:text="${subcatalog.getSubname()}"
+                                                                   th:href="'/shop?type='+${subcatalog.getSubname()}">-- SUBNAME -- </a>
+                                                        </div>
+                                                </div>
+                                        </li>
+                                </ul>
+
+                                <!-- Navbar right items -->
+                                <ul class="nav justify-content-center align-items-center mt-2 mb-2">
+                                        <li class="nav-item">
+                                                <a href="/auth" class="text-center pt-2 pb-2 mr-2"><i class="fas fa-user-circle fa-2x text-primary mx-3"></i></a>
+                                        </li>
+                                </ul>
+                                <ul class="nav justify-content-center align-items-center mt-2 mb-2">
+                                        <li class="nav-item">
+                                                <div class="dropdown">
+                                                        <button type="button" class="btn btn-primary dropdown-toggle pt-2 pb-2 mr-2"
+                                                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                <i class="fas fa-shopping-cart mx-3"></i>
+                                                                <span id="count"><!-- Simple price counter --></span>
+                                                        </button>
+                                                        <div class="dropdown-menu dropdown-menu-right dropdown-wide dropdown-notification" id="dropdown">
+                                                                <div class="dropdown-header"><h6 class="m-2">Кошик</h6></div>
+                                                                <legend></legend>
+                                                                <div class="conteiner">
+                                                                        <div id="show-cart">
+                                                                                <h6 class="text-center">Ваш кошик порожній &#x1f61f;</h6>
+                                                                                <!-- Generated Script -->
+                                                                                <legend></legend>
+                                                                        </div>
+                                                                        <div class="dropdown-footer text-right" id="total-cart">
+                                                                                <!--  <a href="/payment.html" class="btn btn-primary float-right mb-2"><span class="toOrder"></span></a>
+                                                                                <span class="float-left">Total: <span</span>-->
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                                <!-- On dropdown click items fix. Now dd doesn't close on click -->
+                                                <script>document.getElementById("dropdown").addEventListener('click', function (event) {event.stopPropagation();});</script>
+                                        </li>
+                                </ul>
+                        </div>
+                </nav>
+                <div id="note" class="fadeout">
+                        Вибачте, але даного товару вже немає на складі!
+                </div>
+        </div>
+        <!-- Navbar -->
+<div class="container p-3 mt-3">
+        <div class="splitter">
+                <span> <a href="/" th:text="'Магазин'" class="text-decoration-none"></a>
+                        <i class="fas fa-caret-right ml-2 mr-2"></i>
+                        <a th:href="'/shop?type='+${catalogType}" th:text="${catalogType}" class="text-decoration-none"></a></span>
+        </div>
+
+        <div class="text-header text-center text-uppercase">
+                <h4 class="mb-3" th:text="${catalogType}"></h4>
+                <legend></legend>
+        </div>
+
+        <!-- Main Items -->
+        <div class="row mt-5">
+                <!-- Filters -->
+                <div class="col-md-3 text-left">
+                        <form th:action="'/shop?type='+${catalogType}+''" method="POST">
+                                <!-- PRICE FILTER -->
+                                <div class="filter-price mt-2 text-left">
+                                        <h5 class="name">Ціна:</h5>
+                                        <label for="form-control" class="m-1">Від</label>
+                                        <input class="form-control" type="number" name="priceFrom" th:value="${minAndMax.getLeft()}">
+                                        <label for="form-control" class="m-1">До</label>
+                                        <input class="form-control" type="number" name="priceTo" th:value="${minAndMax.getRight()}">
+                                </div>
+                                <!-- PRODUCT AMOUNT >= 1 -->
+                                <div class="accordion mt-2 text-left">
+                                        <div class="card mt-2 mb-2">
+                                                <div class="card-header p-0">
+                                                        <h2 class="mb-0 ">
+                                                                <button class="btn btn-link text-white text-decoration-none w-100 text-left p-1" style="background: #a0bfff"
+                                                                        type="button" data-toggle="collapse"
+                                                                        data-target="#isAvailable" aria-expanded="true" aria-controls="collapseOne">
+                                                                        <i class="fas fa-sort-down float-right p-1" aria-hidden="true"></i>
+                                                                        <label class="ml-1 ">Наявність</label>
+                                                                </button>
+                                                        </h2>
+                                                </div>
+                                                <div id="isAvailable" class="collapse show" aria-labelledby="headingOne" data-parent="#isAvailable">
+                                                        <div class="card-body">
+                                                                <div class="items">
+                                                                        <input type="radio" name="available"
+                                                                               value="YES">
+                                                                        <label>Є в наявності</label><br>
+                                                                        <input type="radio" name="available"
+                                                                               value="NO">
+                                                                        <label>Немає в наявності</label>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
+
+                                <div class="accordion mt-2 text-left" th:each="filter : ${filters}">
+                                        <div class="card mt-2 mb-2" th:if="${filter.getValue().size() > 1}">
+                                                <div class="filter-and-data" >
+                                                        <div class="card-header p-0">
+                                                                <h2 class="mb-0 ">
+                                                                        <button class="btn btn-link text-white text-decoration-none w-100 text-left p-1" style="background: #a0bfff"
+                                                                                type="button" data-toggle="collapse"
+                                                                                th:data-target="'#'+${filter.getKey().getName().replace(' ', '_')}" aria-expanded="true" aria-controls="collapseOne">
+                                                                                <i class="fas fa-sort-down float-right p-1" aria-hidden="true"></i>
+                                                                                <label class="ml-1 " th:text="${filter.getKey().getName()}">-- FILTER NAME --</label>
+                                                                        </button>
+                                                                </h2>
+                                                        </div>
+                                                        <div th:id="${filter.getKey().getName().replace(' ', '_')}" class="collapse show" aria-labelledby="headingOne"
+                                                                th:data-parent="'#'+${filter.getKey().getName().replace(' ', '_')}">
+                                                                <div class="card-body">
+                                                                        <div class="items" th:each="value : ${filter.getValue()}">
+                                                                                <input type="radio" th:name="${filter.getKey().getName().replace(' ', '_')}"
+                                                                                       th:value="${value.getName()}" class="custom-radio">
+                                                                                <label th:text="${value.getName()}"></label>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary mt-2 ml-1 p-2">Фільтрувати</button>
+                                <a th:href="'/shop?type='+${catalogType}" class="btn btn-primary mt-2 ml-1 p-2">Скинути</a>
+                        </form>
+                </div>
+                <div class="col-md-9 m-0 p-0 d-flex align-items-center justify-content-center" th:if="${items == null || items.size() <= 0}">
+                        <div class="notfound">
+                                <h2>Вибачте, наші працівники старанно працювали,<br> але так і не змогли знайти даний товар на складі! &#x1f614</h2>
+                        </div>
+                </div>
+                <!-- Items -->
+                <div class="col-md-9 text-right">
+                        <div class="row">
+                                <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12  mb-2 mt-2 p-1" th:each="item : ${items}">
+                                        <div class="card m-auto">
+                                                <div class="content text-center">
+                                                        <a th:href="'/shop/'+${item.getId()}" class="text-decoration-none text-dark" >
+                                                                <img class="img-pizza mr-auto ml-auto" th:src="${item.getImageUrl()}" style="height: 300px !important; width: 240px !important;">
+                                                                <div class="card-body">
+                                                                        <h5 class="card-text text-center" th:text="${item.getName()}">-- ITEM NAME --</h5>
+                                                                        <legend></legend>
+                                                                        <h5 class="card-text text-center" th:text="${item.getPrice()}+' грн'">-- ITEM PRICE --</h5>
+                                                                </div>
+                                                        </a> 
+                                                        <button th:data-name="${item.getName()}"
+                                                                th:data-price="${item.getPrice()}"
+                                                                th:data-img="${item.getImageUrl()}"
+                                                                th:data-id="${item.getId()}"
+                                                                class="btn btn-primary item-add w-100"
+                                                                th:disabled="${item.getAmount() <= 0}">Замовити</button>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+
+<!-- Footer -->
+        <footer id="footer" class="site-footer">
+                <div class="container">
+                        <div class="row">
+                                <div class="col-lg-6 col-sm-12 col-md-6">
+                                        <h6>Про нас</h6>
+                                        <p class="text-justify">HookahShop магазин кальянів, комплектуючих, аксесуарів,
+                                                тощо.<br>
+                                                Кальян — прилад для куріння, що дозволяє фільтрувати і охолоджувати дим, що
+                                                вдихається. Роль фільтра відіграє посудина з водою, вином чи іншою рідиною. У
+                                                посудину вставлена курильна
+                                                чашка,
+                                                поєднана з трубкою, кінець якої йде під воду. Вище рівня води з посудини
+                                                відходить ще одна трубка, до якої
+                                                прикріплений
+                                                цибух. При курінні в посудині кальяну створюється негативний тиск, завдяки чому
+                                                дим піднімається крізь
+                                                рідину
+                                                і через
+                                                трубку з цибухом потрапляє в легені курця.
+                                        </p>
+                                </div>
+
+                                <div class="col-lg-3 col-xs-12 col-md-3">
+                                        <h6>Категорії</h6>
+                                        <ul class="footer-links">
+                                                <li><a href="/shop?type=Кальяни">Кальяни</a></li>
+                                                <li><a href="/shop?type=Колби">Комплектуючі</a></li>
+                                                <li><a href="/shop?type=Регулятор жару">Аксесуари</a></li>
+                                                <li><a href="/shop?type=Уголь">Матеріали</a></li>
+                                                <li><a href="/personal">Особистий кабінет</a></li>
+                                                <li><a href="/order">Оформлення замовлення</a></li>
+                                        </ul>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                                        <style>
+                                                #map {
+                                                        height: 100%;
+                                                        width: 100%;
+                                                }
+                                        </style>
+                                        <div id="map"></div>
+                                        <script>
+                                                function initMap() {
+                                                        var uluru = { lat: 50.381426, lng: 30.496706 };
+                                                        var map = new google.maps.Map(
+                                                                document.getElementById('map'), { zoom: 17, center: uluru });
+                                                        var marker = new google.maps.Marker({ position: uluru, map: map });
+                                                }
+                                        </script>
+                                        <script async defer
+                                                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARBiMgr_hoUyZI4psDdTJ06cpraxNse3Y&callback=initMap">
+                                        </script>
+                                </div>
+                        </div>
+                </div>
+                <div class="container">
+                        <div class="row mt-4">
+                                <div class="col-md-8 col-sm-4 col-xs-12">
+                                        <p class="copyright-text">Copyright &copy; 2020 All Rights Reserved.</p>
+                                </div>
+
+                                <div class="col-md-4 col-sm-4 col-xs-12">
+                                        <ul class="social-icons">
+                                                <li><a class="facebook" href="#"><i class="fab fa-facebook"></i></a></li>
+                                                <li><a class="twitter" href="#"><i class="fab fa-twitter"></i></a></li>
+                                                <li><a class="dribbble" href="#"><i class="fab fa-dribbble"></i></a></li>
+                                                <li><a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a></li>
+                                        </ul>
+                                </div>
+                        </div>
+                </div>
+        </footer>
+</div>
+</body>
+</html>

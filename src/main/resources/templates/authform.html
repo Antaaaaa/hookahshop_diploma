@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css?family=Lora&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <!-- Bootstrap and JQuery -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- Captcha -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+  <title>HookahShop</title>
+
+    </head>
+<body>
+
+<div class="main-wrapper">
+  <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-white">
+    <!-- Navbar text -->
+    <a class="navbar-brand text-dark d-flex align-items-center" href="/">
+      <img src="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png" width="40" height="40" class="d-inline-block align-top mr-1" alt="HookahShop">
+      <span class="d-inline-block m-0">HookahShop</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+            aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbars -->
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="nav mr-auto mx-auto justify-content-center" th:each="catalog : ${catalogs}">
+
+        <!-- For items without subcatalog -->
+        <li th:if="${catalog.getSubCatalogList() == null || catalog.getSubCatalogList().size() == 1}" class="nav-item dropdown text">
+          <a class="nav-link text-dark" th:text="${catalog.getName()}" th:href="'/shop?type='+${catalog.getName()}">--- NAME ---</a>
+        </li>
+
+        <!-- For items with subcatalog enable -->
+        <li th:if="${catalog.getSubCatalogList() != null && catalog.getSubCatalogList().size() > 1}" class="nav-item dropdown">
+          <a class="nav-link text-dark" style="cursor: pointer;" th:text="${catalog.getName()}"
+             data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">-- NAME -- </a>
+          <div class="dropdown-menu">
+            <div class="items" th:each="subcatalog : ${catalog.getSubCatalogList()}">
+              <a class="dropdown-item" th:text="${subcatalog.getSubname()}"
+                 th:href="'/shop?type='+${subcatalog.getSubname()}">-- SUBNAME -- </a>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Navbar right items -->
+
+      <ul class="nav justify-content-center align-items-center">
+<!--        <li class="nav-item">-->
+<!--          <div class="dropdown">-->
+<!--            <button type="button" class="btn btn-primary dropdown-toggle pt-2 pb-2 mr-2"-->
+<!--                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+<!--              <i class="fas fa-shopping-cart mx-3"></i>-->
+<!--              <span id="count">&lt;!&ndash; Simple price counter &ndash;&gt;</span>-->
+<!--            </button>-->
+<!--            <div class="dropdown-menu dropdown-menu-right dropdown-wide dropdown-notification" id="dropdown">-->
+<!--              <div class="dropdown-header"><h6 class="m-2">Кошик</h6></div>-->
+<!--              <legend></legend>-->
+<!--              <div class="conteiner">-->
+<!--                <div id="show-cart">-->
+<!--                  <h6 class="text-center">Ваш кошик порожній &#x1f61f;</h6>-->
+<!--                  &lt;!&ndash; Generated Script &ndash;&gt;-->
+<!--                  <legend></legend>-->
+<!--                </div>-->
+<!--                <div class="dropdown-footer" id="total-cart">-->
+<!--                  &lt;!&ndash;  <a href="/payment.html" class="btn btn-primary float-right mb-2"><span class="toOrder"></span></a>-->
+<!--                  <span class="float-left">Total: <span</span>&ndash;&gt;-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          &lt;!&ndash; On dropdown click items fix. Now dd doesn't close on click &ndash;&gt;-->
+<!--          <script>document.getElementById("dropdown").addEventListener('click', function (event) {event.stopPropagation();});</script>-->
+<!--        </li>-->
+        <li class="nav-item">
+          <a href="/auth" class="text-center pt-2 pb-2 mr-2"><i class="fas fa-user-circle fa-2x text-primary mx-3"></i></a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+        
+
+        <div class="container p-3 mt-3 authform">
+          <div class="splitter">
+              <span><a href="/" class="text-decoration-none">Магазин</a>
+                <i class="fas fa-caret-right ml-2 mr-2"></i>
+                <a href="/auth" class="text-decoration-none">Авторизація</a></span>
+          </div>
+
+            <div class="row">
+              <div class="col-md-12 col-sm-12 col-xs-12">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs mt-5">
+                  <li class="nav-item">
+                    <a class="nav-link active text-dark" data-toggle="tab" href="#auth">Авторизація</a>
+                  </li>
+                  <li class="nav-item">
+                    <a id="registertab" class="nav-link text-dark" data-toggle="tab" href="#regist">Реєстрація</a>
+                  </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="card mb-5 mx-auto p-3">
+                  <div class="tab-content">
+                    <div class="tab-pane container active" id="auth">
+                      <form class="mt-4 text-center" action="/j_spring_security_check" method="POST" name="loginform">
+                        <h3 class="text-center text-uppercase mb-4">Авторизація</h3>
+                        <h5 class="text-danger">Для виконання подальших кроків будь ласка авторизуйтесь! &#x1f609;</h5>
+                        <input class="form-control mx-auto w-50 mt-4" type="email" name="j_login" placeholder="Email" required>
+                        <input class="form-control mx-auto w-50 mt-4" type="password" name="j_password" placeholder="Password" required>
+                        <button type="submit" class="btn btn-primary mt-4 w-50 mb-3">Ввійти</button>
+                        <h5 class="text-danger" th:if="${error != null}">Невірний email або пароль! &#x1F62E;</h5>
+                        <legend></legend>
+                        <label>У вас немає акаунту? <a href="#" onclick="document.getElementById('registertab').click();"
+                                                       class="text-primary text-decoration-none" >Зареєструватись</a></label>
+                      </form>
+                    </div>
+                    <div class="tab-pane container fade" id="regist">
+                      <form class="mt-4 text-center" action="/register" name="registerform" method="POST">
+                        <h3 class="text-center text-uppercase mb-4">Реєстрація</h3>
+                        <input class="form-control mx-auto w-50 mt-4" type="text" name="username" placeholder="Ім'я" required>
+                        <input class="form-control mx-auto w-50 mt-4 register-email" type="email" name="email" onkeyup="emailCheck();"
+                               onchange="emailCheck(); checkOut();" onautocomplete="emailCheck(); checkOut()" placeholder="Email" required>
+                        <input class="form-control mx-auto w-50 mt-4 register-password" type="password" name="password" onkeyup="passwordCheck();"
+                               onchange="passwordCheck(); checkOut();" onautocomplete="passwordCheck(); checkOut()" placeholder="Пароль" required>
+                        <input class="form-control mx-auto w-50 mt-4 register-password2" type="password" name="password2"  onkeyup="passwordCheck();"
+                               onchange="passwordCheck(); checkOut();" onautocomplete="passwordCheck(); checkOut()" placeholder="Підтвердження паролю" required>
+                        <!-- CAPTCHA -->
+                        <div class="container d-flex justify-content-center mt-4">
+                          <div class="g-recaptcha" data-callback="checkOut" data-sitekey="6LcF1fMUAAAAAKso794HnaE1y2LPFP_02TGp-_J3"></div>
+                        </div>
+
+                        <button id="registerbutton" type="submit" class="btn btn-primary mt-4 w-50 mb-3 button-register" disabled>Зареєструватись</button>
+                      </form>
+                      <div class="d-flex justify-content-center">
+                        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                          <div class="toast-header">
+                            <strong class="mr-auto">Помилка &#x1f525;</strong>
+                            <button type="button" class="ml-2 mb-1 close" onclick="$('.toast').removeClass('show')" data-dismiss="toast"
+                              aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="toast-body">
+                            <p class="data-info"></p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- JS validation-->
+                    <script>
+                      // let http_url = "http://localhost:8080/";
+                      let http_url = "http://hookah-shop.herokuapp.com/";
+                      var value;
+                        function checkOut() {
+                          if (emailCheck() && passwordCheck() && grecaptcha && grecaptcha.getResponse().length > 0) {
+                            $('#registerbutton').removeAttr("disabled");
+                          }
+                          return (emailCheck() && passwordCheck());
+                        }
+                        function emailCheck() {
+                          var email = document.registerform.email.value;
+                          $('.toast').removeClass('show');
+                          $('.data-info').removeClass('password-error');
+                          $('.data-info').removeClass('password-same-error');
+                          $('.data-info').removeClass('email-exists');
+                          $('.register-email').removeClass('error');
+                          $.get(http_url + "json/finduser/"+email, function (data) {
+                            if (data === true) {
+                              $('.toast').addClass('show');
+                              $('.data-info').addClass('email-exists');
+                              $('.register-email').addClass('error');
+                              $('#registerbutton').attr( "disabled", "disabled" );
+                              value = false;
+                            }
+                          });
+                          value = true;
+                          return value;
+                        };
+
+                        function passwordCheck() {
+                        var password = document.registerform.password.value;
+                        var password2 = document.registerform.password2.value;
+                        $('.toast').removeClass('show');
+                        $('.data-info').removeClass('password-error');
+                        $('.data-info').removeClass('password-same-error');
+                        $('.data-info').removeClass('email-exists');
+                          if (password.length < 6 && password.length != 0){
+                            $('.toast').addClass('show');
+                            $('.data-info').addClass('password-error');
+                            $('.register-password').addClass('error');
+                            $('#registerbutton').attr( "disabled", "disabled" );
+                            return false;
+                          } else if (password !== password2 && password2.length !== 0){
+                            $('.toast').addClass('show');
+                            $('.data-info').addClass('password-same-error');
+                            $('.register-password2').addClass('error');
+                            $('#registerbutton').attr( "disabled", "disabled" );
+                            return false;
+                          }
+                          $('.register-password2').removeClass('error');
+                          $('.register-password').removeClass('error');
+                          return true;
+                        };
+                    </script>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+</div>
+
+
+
+
+
+
+  <!-- Footer -->
+  <footer id="footer" class="site-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-sm-12 col-md-6">
+          <h6>Про нас</h6>
+          <p class="text-justify">HookahShop магазин кальянів, комплектуючих, аксесуарів,
+            тощо.<br>
+            Кальян — прилад для куріння, що дозволяє фільтрувати і охолоджувати дим, що
+            вдихається. Роль фільтра відіграє посудина з водою, вином чи іншою рідиною. У
+            посудину вставлена курильна
+            чашка,
+            поєднана з трубкою, кінець якої йде під воду. Вище рівня води з посудини
+            відходить ще одна трубка, до якої
+            прикріплений
+            цибух. При курінні в посудині кальяну створюється негативний тиск, завдяки чому
+            дим піднімається крізь
+            рідину
+            і через
+            трубку з цибухом потрапляє в легені курця.
+          </p>
+        </div>
+
+        <div class="col-lg-3 col-xs-12 col-md-3">
+          <h6>Категорії</h6>
+          <ul class="footer-links">
+            <li><a href="/shop?type=Кальяни">Кальяни</a></li>
+            <li><a href="/shop?type=Колби">Комплектуючі</a></li>
+            <li><a href="/shop?type=Регулятор жару">Аксесуари</a></li>
+            <li><a href="/shop?type=Уголь">Матеріали</a></li>
+            <li><a href="/personal">Особистий кабінет</a></li>
+            <li><a href="/order">Оформлення замовлення</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+          <style>
+            #map {
+              height: 100%;
+              width: 100%;
+            }
+          </style>
+          <div id="map"></div>
+          <script>
+            function initMap() {
+              var uluru = { lat: 50.381426, lng: 30.496706 };
+              var map = new google.maps.Map(
+                      document.getElementById('map'), { zoom: 17, center: uluru });
+              var marker = new google.maps.Marker({ position: uluru, map: map });
+            }
+          </script>
+          <script async defer
+                  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARBiMgr_hoUyZI4psDdTJ06cpraxNse3Y&callback=initMap">
+          </script>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row mt-4">
+        <div class="col-md-8 col-sm-4 col-xs-12">
+          <p class="copyright-text">Copyright &copy; 2020 All Rights Reserved.</p>
+        </div>
+
+        <div class="col-md-4 col-sm-4 col-xs-12">
+          <ul class="social-icons">
+            <li><a class="facebook" href="#"><i class="fab fa-facebook"></i></a></li>
+            <li><a class="twitter" href="#"><i class="fab fa-twitter"></i></a></li>
+            <li><a class="dribbble" href="#"><i class="fab fa-dribbble"></i></a></li>
+            <li><a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
+</body>
+</html>

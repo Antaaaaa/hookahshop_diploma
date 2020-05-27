@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="icon" href="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png">
+  <link href="https://fonts.googleapis.com/css?family=Lora&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/animate.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+  <title>HookahShop</title>
+
+  <!-- Bootstrap and JQuery -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+  <div class="main-wrapper">
+    <div class="wrapper sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+      <!-- Navbar text -->
+      <a class="navbar-brand text-dark d-flex align-items-center " href="/">
+        <img src="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png" width="40" height="40" class="d-inline-block align-top mr-1" alt="HookahShop">
+        <span class="d-inline-block m-0">HookahShop</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+              aria-controls="navbarTogglerfDemo03" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+
+      <!-- Navbars -->
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <ul class="nav mr-auto mx-auto justify-content-center" th:each="catalog : ${catalogs}">
+
+          <!-- For items without subcatalog -->
+          <li th:if="${catalog.getSubCatalogList() == null || catalog.getSubCatalogList().size() == 1}" class="nav-item dropdown text">
+            <a class="nav-link text-dark" th:text="${catalog.getName()}" th:href="'/shop?type='+${catalog.getName()}">--- NAME ---</a>
+          </li>
+
+          <!-- For items with subcatalog enable -->
+          <li th:if="${catalog.getSubCatalogList() != null && catalog.getSubCatalogList().size() > 1}" class="nav-item dropdown">
+            <a class="nav-link text-dark" style="cursor: pointer;" th:text="${catalog.getName()}"
+               data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">-- NAME -- </a>
+            <div class="dropdown-menu">
+              <div class="items" th:each="subcatalog : ${catalog.getSubCatalogList()}">
+                <a class="dropdown-item" th:text="${subcatalog.getSubname()}"
+                   th:href="'/shop?type='+${subcatalog.getSubname()}">-- SUBNAME -- </a>
+              </div>
+            </div>
+          </li>
+        </ul>
+
+        <!-- Navbar right items -->
+        <ul class="nav justify-content-center align-items-center">
+          <li class="nav-item">
+            <a href="/auth" class="text-center pt-2 pb-2 mr-2"><i class="fas fa-user-circle fa-2x text-primary mx-3"></i></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+      <div id="note" class="fadeout">
+        Вибачте, але даного товару вже немає на складі!
+      </div>
+    </div>
+    <div class="container p-3 mt-3">
+        <div class="splitter">
+          <span><a href="/" class="text-decoration-none">Магазин</a>
+            <i class="fas fa-caret-right ml-2 mr-2"></i>
+            <a href="/order" class="text-decoration-none">Оформлення замовлення</a></span>
+        </div>
+
+        <h4 class="text-center text-uppercase p-4">Оформлення замовлення</h4>
+
+        <div class="checkout table-responsive">
+          <table class="table w-100">
+            <tbody>
+              <thead class="bg-primary text-white">
+            <tr>
+              <th><h4 class="text-center">Фото:</h4></th>
+              <th><h4 class="text-center">Назва:</h4></th>
+              <th><h4 class="text-center">Кількість:</h4></th>
+              <th><h4 class="text-center">Ціна:</h4></th>
+              <th><h4 class="text-center">Всього:</h4></th>
+            </tr>
+            </thead>
+            <tr th:each="item : ${order.getCart().getSelectedItems()}">
+              <th>
+                <h4 class="text-center">
+                  <a th:href="'/shop/'+${item.getShopProduct().getId()}">
+                    <img th:src="${item.getShopProduct().getImageUrl()}" width="100px" alt="">
+                  </a>
+                </h4>
+              </th>
+              <th><h4 class="text-center mt-5" th:text="${item.getShopProduct().getName()}">-- PRODUCT NAME --</h4></th>
+              <th class="text-center">
+                <h4 class="text-center mt-5">
+                  <button th:onclick="'deleteItem(' + ${item.getShopProduct().getId()} + ');'" class="btn btn-danger">-</button>
+                  <span th:text="${item.getNumber()}"></span>
+                  <button th:onclick="'addItem(' + ${item.getShopProduct().getId()} + ');'" class="btn btn-danger">+</button>
+                </h4>
+              </th>
+              <th><h4 class="text-center mt-5" th:text="${item.getShopProduct().getPrice()}+' грн'">-- PRICE --</h4></th>
+              <th><h4 class="text-center mt-5">
+                <span th:text="${item.getNumber()}*${item.getShopProduct().getPrice()}+' грн'"></span>
+                <button th:onclick="'deleteAllItems(' + ${item.getShopProduct().getId()} + ');'" class="btn btn-danger float-right">X</button></h4></th>
+            </tr>
+            <script>
+              // let http_url = "http://localhost:8080/";
+              let http_url = "http://hookah-shop.herokuapp.com/";
+              function deleteAllItems(id){
+                $.ajax({
+                  url : http_url + 'cart/minusall/'+id,
+                  type : 'POST',
+                  statusCode : {
+                    200: function() {
+                      window.location.href = "/order";
+                    },
+                    400: function(){
+                        console.log(123);
+                        var note = document.getElementById("note");
+                          note.removeClass("fadeout").addClass("fadein");
+                        window.setTimeout( function(){
+                          note.removeClass("fadein").addClass("fadeout");
+                        }, 5000);
+                      }
+                    }
+                });
+              }
+              function deleteItem(id){
+                $.ajax({
+                  url : http_url + 'cart/minus/'+id,
+                  type : 'POST',
+                  statusCode : {
+                    200: function() {
+                      window.location.href = "/order";
+                    },
+                    400: function(){
+                      console.log(123);
+                      var note = document.getElementById("note");
+                      note.removeClass("fadeout").addClass("fadein");
+                      window.setTimeout( function(){
+                        note.removeClass("fadein").addClass("fadeout");
+                      }, 5000);
+                    }
+                  }
+                });
+              }
+              function addItem(id){
+                $.ajax({
+                  url : http_url + 'cart/add/'+id,
+                  type : 'POST',
+                  statusCode : {
+                    200: function() {
+                      window.location.href = "/order";
+                    },
+                    400: function(){
+                      $(document).ready(function () {
+                        if ($('#note').hasClass("fadeout"))
+                          $("#note").removeClass("fadeout").addClass("fadein");
+                        window.setTimeout( function(){
+                          $("#note").removeClass("fadein").addClass("fadeout");
+                        }, 5000);
+                      })
+                    }
+                  }
+                });
+              }
+            </script>
+            </tbody>
+          </table>
+
+          <div class="summary text-right card-header" >
+            <h4 th:text="'Загальна вартість: '+${order.getSummary()}+' грн'">-- SUMMARY --</h4>
+          </div>
+        </div>
+      <form action="/order/success" class="container" id="formSubmit" onsubmit="saveAllData()" method="POST">
+        <div class="row mt-5">
+          <div class="col-md-3">
+            <input class="form-control m-4 email" type="email" name="email" placeholder="Email" onchange="saveAllData()" th:value="${order.getUser().getEmail()}" readonly>
+            <input class="form-control m-4 name"  type="text" name="name" placeholder="Ім'я"  onchange="saveAllData()"th:value="${order.getUser().getUsername()}" required>
+            <input class="form-control m-4 surname" type="text" name="surname" placeholder="Прізвище" onchange="saveAllData()" required>
+            <input class="form-control m-4 phone" type="number" name="phone" placeholder="Телефон" onchange="saveAllData()" required>
+            <textarea class="form-control m-4 comment" name="comment" placeholder="Коментар" onchange="saveAllData()" style="min-height:100px;"></textarea>
+          </div>
+          <div class="col-md-5">
+            <h5 class="text-center ">Доставка:</h5>
+            <div class="custom-control custom-radio ml-5 mt-3">
+              <input type="radio" class="custom-control-input" id="customRadio" name="delivery" onchange="radioStaff();saveAllData();" value="Самовивоз" checked>
+              <label class="custom-control-label" for="customRadio" >Самовивоз</label>
+            </div>
+            <div class="custom-control custom-radio ml-5 mt-3">
+              <input type="radio" class="custom-control-input" id="customRadio2" name="delivery" onchange="radioStaff();saveAllData();" value="Нова пошта">
+              <label class="custom-control-label" for="customRadio2">Нова пошта</label>
+            </div>
+
+            <script>
+              $(document).ready(function () {
+                    radioStaff();
+                $(".delimer").on("keydown", ".search", function (event) {
+                  var input = $(this).val();
+                  readAllCities(input);
+                });
+                $(".delimer").on("change", ".search", function (event) {
+                  var input = $(this).val();
+                  readAllCities(input);
+                  saveAllData();
+                });
+                $(".searcher").on("change", ".search-dropdown", function (event) {
+                  var ref = $(this).children("option:selected").attr('data-ref');
+                  console.log(ref);
+                  readAllDepartments(ref);
+                  saveAllData();
+                });
+                $(".department").on("change", ".department-chooser", function (event) {
+                  saveAllData();
+                })
+              });
+                function radioStaff(){
+                  var output = "";
+                  if($('#customRadio').is(':checked')) {
+                    output = "<label for='exampleFormControlSelect1'>Місце розташування</label>" +
+                    "<select class='custom-select mt-3 p-1 address' id='exampleFormControlSelect1'" +
+                            " name='address'>"
+                    $.get(http_url + "json/shoplocations", function(address){
+                      var len =  address.length;
+                      for(var i=0;i<len;i++ ){
+                        output+="<option>"+address[i]['address']+"</option>";
+                      }
+                      output+="</select>";
+                      $('.delimer').html(output);
+                      $('.searcher').html("");
+                      $('.department').html("");
+                    });
+                  }
+                  else if ($('#customRadio2').is(':checked')){
+                    output = "<label>Введіть місто</label>" +
+                            "<input type='text' id='search' class='form-control search'/>";
+                    $('.delimer').html(output);
+                  }
+                }
+
+              function readAllCities(input){
+                var html = "<select class='custom-select mt-3 p-1 search-dropdown'" +
+                        " id='exampleFormControlSelect1' name='address'>" +
+                        "<option value='Default'>Оберіть місцезнаходження</option>"
+                $.get(http_url + "getAllCities/"+input, function(address){
+                  var len =  address.length;
+                  for(var i=0;i<len;i++ ){
+                    var allInfo = address[i]['settlementTypeDescription'] + " " + address[i]['description'] + ", " + address[i]['areaDescription'];
+                    html+="<option data-ref='"+address[i]['ref']+"' value='"+ allInfo + "'>"+ allInfo + "</option>";
+                  }
+                  html+="</select>";
+                  $('.searcher').html(html);
+                });
+              }
+              function readAllDepartments(ref) {
+                var html = "<select class='custom-select mt-3 p-1 department-chooser'" +
+                        " id='departmentChooser' name='department'>" +
+                        "<option value='Default'>Виберіть відділення</option>";
+                $.get(http_url + "getAllDepartments/"+ref, function (result) {
+                  var len = result.length;
+                  console.log(ref);
+                  console.log(result);
+                  for(var i = 0; i<len; i++)
+                    html+="<option>"+result[i]+"</option>";
+                  html+="</select>";
+                  $('.department').html(html);
+                });
+              }
+            </script>
+
+            <div class="content-address p-5 w-100">
+              <div class="form-group delimer w-100">
+                 <!-- Dinamical -->
+              </div>
+              <div class="searcher w-100">
+                <!-- Search -->
+              </div>
+              <div class="department w-100">
+                <!-- Department -->
+              </div>
+            </div>
+
+          </div>
+          <div class="col-md-4">
+            <h5 class="text-center ">Спосіб оплати:</h5>
+            <div class="custom-control custom-radio ml-5 mt-3">
+              <input type="radio" class="custom-control-input" id="customRadio3" onchange="paymentType();saveAllData();" name="payment"
+                     value="Оплата при отриманні" checked>
+              <label class="custom-control-label" for="customRadio3">Оплата при отриманні</label>
+            </div>
+            <div class="custom-control custom-radio ml-5 mt-3">
+              <input type="radio" class="custom-control-input" id="customRadio4" onchange="paymentType();saveAllData()" name="payment"
+                     value="Повна передоплата">
+              <label class="custom-control-label" for="customRadio4">Повна передоплата</label>
+            </div>
+            <script>
+              var data="";
+              var signature="";
+              $(document).ready(function(){
+                getAllData();
+                paymentType();
+                });
+
+              function saveAllData() {
+                var name = $('.name').val();
+                var surname = $('.surname').val();
+                var phone = $('.phone').val();
+                var email = $('.email').val();
+                var comment = $('.comment').val();
+                var address = $('.address').val();
+                var department = $('.department-chooser').val();
+                var search = $('.search-dropdown').val();
+                var addressResult;
+                if (address == null) addressResult = search + ", " + department;
+                else addressResult = address;
+                var jsonObject = {'name':name, 'surname':surname, 'email':email, 'phone':phone, 'comment':comment, 'address' : addressResult};
+                $.ajax({
+                  type: "POST",
+                  contentType: "application/json; charset=utf-8",
+                  url: "/order/saveorderdata/",
+                  dataType: "json",
+                  data: JSON.stringify(jsonObject),
+                  statusCode: {
+                    200: function() {
+                    return;
+                  }
+                }
+              });
+              }
+              function paymentType(){
+                var output = "";
+                if($('#customRadio3').is(':checked')) {
+                  output = "<button type='submit' class='btn btn-primary m-4'>Підтвердити</button>";
+                  $('.submit').html(output);
+                }
+                if ($('#customRadio4').is(':checked')){
+                      getAllData();
+                      output = "</form>" +
+                              "<form method='POST' action='https://www.liqpay.ua/api/3/checkout' accept-charset='utf-8'>" +
+                              "<input type='hidden' name='data' value='"+data+"'/>" +
+                              "<input type='hidden' name='signature' value='"+signature+"'/>" +
+                              "<button type='submit' class='btn btn-primary m-4' >Оплатити картою</button>" +
+                              "</form>";
+                      $('.submit').html(output);
+                  }
+              }
+              function getAllData(){
+                return $.ajax({
+                  type: "GET",
+                  url: "/order/getLiqPayData/",
+                  statusCode: {
+                    200: function(result) {
+                      data = result['data'];
+                      signature = result['signature'];
+                    }
+                  }
+              });
+              }
+            </script>
+          </div>
+        </div>
+        <legend></legend>
+        <div class="submit text-right" style="max-width: 99% !important;">
+            <!-- SUBMIT PAYMENT BUTTON -->
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+    <!-- Footer -->
+    <footer id="footer" class="site-footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 col-sm-12 col-md-6">
+            <h6>Про нас</h6>
+            <p class="text-justify">HookahShop магазин кальянів, комплектуючих, аксесуарів,
+              тощо.<br>
+              Кальян — прилад для куріння, що дозволяє фільтрувати і охолоджувати дим, що
+              вдихається. Роль фільтра відіграє посудина з водою, вином чи іншою рідиною. У
+              посудину вставлена курильна
+              чашка,
+              поєднана з трубкою, кінець якої йде під воду. Вище рівня води з посудини
+              відходить ще одна трубка, до якої
+              прикріплений
+              цибух. При курінні в посудині кальяну створюється негативний тиск, завдяки чому
+              дим піднімається крізь
+              рідину
+              і через
+              трубку з цибухом потрапляє в легені курця.
+            </p>
+          </div>
+
+          <div class="col-lg-3 col-xs-12 col-md-3">
+            <h6>Категорії</h6>
+            <ul class="footer-links">
+              <li><a href="/shop?type=Кальяни">Кальяни</a></li>
+              <li><a href="/shop?type=Колби">Комплектуючі</a></li>
+              <li><a href="/shop?type=Регулятор жару">Аксесуари</a></li>
+              <li><a href="/shop?type=Уголь">Матеріали</a></li>
+              <li><a href="/personal">Особистий кабінет</a></li>
+              <li><a href="/order">Оформлення замовлення</a></li>
+            </ul>
+          </div>
+
+          <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+            <style>
+              #map {
+                height: 100%;
+                width: 100%;
+              }
+            </style>
+            <div id="map"></div>
+            <script>
+              function initMap() {
+                var uluru = { lat: 50.381426, lng: 30.496706 };
+                var map = new google.maps.Map(
+                        document.getElementById('map'), { zoom: 17, center: uluru });
+                var marker = new google.maps.Marker({ position: uluru, map: map });
+              }
+            </script>
+            <script async defer
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARBiMgr_hoUyZI4psDdTJ06cpraxNse3Y&callback=initMap">
+            </script>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row mt-4">
+          <div class="col-md-8 col-sm-4 col-xs-12">
+            <p class="copyright-text">Copyright &copy; 2020 All Rights Reserved.</p>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12">
+            <ul class="social-icons">
+              <li><a class="facebook" href="#"><i class="fab fa-facebook"></i></a></li>
+              <li><a class="twitter" href="#"><i class="fab fa-twitter"></i></a></li>
+              <li><a class="dribbble" href="#"><i class="fab fa-dribbble"></i></a></li>
+              <li><a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

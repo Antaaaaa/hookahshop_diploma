@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css?family=Lora&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <!-- Bootstrap and JQuery -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <title>HookahShop</title>
+
+</head>
+<body>
+
+<div class="main-wrapper ">
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-white">
+        <!-- Navbar text -->
+        <a class="navbar-brand text-dark d-flex align-items-center " href="/">
+            <img src="https://res.cloudinary.com/hxntglbil/image/upload/v1588586420/icons/icon_ootfud.png" width="40" height="40" class="d-inline-block align-top mr-1" alt="HookahShop">
+            <span class="d-inline-block m-0">HookahShop</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbars -->
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="nav mr-auto mx-auto justify-content-center" th:each="catalog : ${catalogs}">
+
+                <!-- For items without subcatalog -->
+                <li th:if="${catalog.getSubCatalogList() == null || catalog.getSubCatalogList().size() == 1}" class="nav-item dropdown text">
+                    <a class="nav-link text-dark" th:text="${catalog.getName()}" th:href="'/shop?type='+${catalog.getName()}">--- NAME ---</a>
+                </li>
+
+                <!-- For items with subcatalog enable -->
+                <li th:if="${catalog.getSubCatalogList() != null && catalog.getSubCatalogList().size() > 1}" class="nav-item dropdown">
+                    <a class="nav-link text-dark" style="cursor: pointer;" th:text="${catalog.getName()}"
+                       data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">-- NAME -- </a>
+                    <div class="dropdown-menu">
+                        <div class="items" th:each="subcatalog : ${catalog.getSubCatalogList()}">
+                            <a class="dropdown-item" th:text="${subcatalog.getSubname()}"
+                               th:href="'/shop?type='+${subcatalog.getSubname()}">-- SUBNAME -- </a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Navbar right items -->
+
+            <ul class="nav justify-content-center align-items-center">
+                <li class="nav-item">
+                    <a href="/auth" class="text-center pt-2 pb-2 mr-2"><i class="fas fa-user-circle fa-2x text-primary mx-3"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container p-3 mt-3 authform">
+        <div class="splitter">
+            <span><a href="/" class="text-decoration-none">Магазин</a>
+              <i class="fas fa-caret-right ml-2 mr-2"></i>
+              <a href="/personal" class="text-decoration-none">Особистий кабінет</a></span>
+              <i class="fas fa-caret-right ml-2 mr-2"></i>
+              <a href="/admin/editor" class="text-decoration-none">Редагування товарів</a></span>
+        </div>
+
+        <div class="row main-wrapper mt-5 ">
+            <form class="col-md-8" th:action="'/admin/editor/change/'+${thisItem.getId()}" enctype="multipart/form-data" method="POST">
+                <div class="row">
+            <div class="col-md-6">
+                    <select class="form-control m-2 selector">
+                        <option th:each="item : ${items}"
+                                th:text="${item.getName()}"
+                                th:value="${item.getId()}"
+                                th:selected="${item.getId().equals(thisItem.getId())}"></option>
+                    </select>
+
+                    <script>
+                        $('document').ready(function () {
+                            // let http_url = "http://localhost:8080/";
+                            let http_url = "http://hookah-shop.herokuapp.com/";
+                            $(".selector").on('change', function () {
+                                var value = $(".selector").val();
+                                window.location.href = "/admin/editor?id="+value;
+                            });
+                            $(".photoFile").on('change', function (e) {
+                                var value = e.target.files[0].name;
+                                $(".photoFileLabel").text(value);
+                            })
+                            $(".character-name").on('change', function () {
+                                var id = $('.character-name').val();
+                                var output = "";
+                                if (id === '-1') {
+                                    $('.character-value-wrapper').html(output);
+                                } else {
+                                output = "<label class='m-2 p-2 badge badge-secondary'>Значення</label>" +
+                                    "<select class='custom-select m-2' id='selectValues'" +
+                                    "name='character-value'>";
+                                $.get(http_url + "json/allvalues/"+id, function(values){
+                                    var len =  values.length;
+                                    for(var i=0;i<len;i++ ){
+                                        output+="<option>"+values[i]['name']+"</option>";
+                                    }
+                                    $('.character-value-wrapper').html(output);
+                                });
+                                }
+                            });
+                            $(".modal-character-name").on('change', function () {
+                                var id = $('.modal-character-name').val();
+                                var output = "";
+                                if (id === '-1'){
+                                    $('.new-value-wrapper').html(output);
+                                    $('.btn-modal-add').attr( "disabled", "disabled" );
+                                } else {
+                                output = "<select class='custom-select m-2' id='selectValues'" +
+                                    "name='new-character-value'>";
+                                $.get(http_url + "json/allvalues/"+id, function(values){
+                                    var len =  values.length;
+                                    for(var i=0;i<len;i++ ){
+                                        output+="<option>"+values[i]['name']+"</option>";
+                                    }
+                                    $('.btn-modal-add').removeAttr('disabled');
+                                    $('.new-value-wrapper').html(output);
+                                });
+                                }
+                            });
+                        })
+                    </script>
+                    <input class="form-control m-2" type="text" placeholder="ID" name="id" th:value="${thisItem.getId()}" readonly>
+                    <label class="m-2 p-2 badge badge-secondary">Назва</label>
+                    <input class="form-control m-2" type="text" placeholder="Назва" name="name" th:value="${thisItem.getName()}" required>
+                    <label class="m-2 p-2 badge badge-secondary">Ціна</label>
+                    <input class="form-control m-2" type="number" placeholder="Ціна" name="price" th:value="${thisItem.getPrice()}" required>
+                    <label class="m-2 p-2 badge badge-secondary">Кількість</label>
+                    <input class="form-control m-2" type="number" placeholder="Кількість" name="amount" th:value="${thisItem.getAmount()}" required>
+                    <label class="m-2 p-2 badge badge-secondary">Тип</label>
+                    <select class="form-control m-2" name="type">
+                        <option value=""
+                                th:selected="${thisItem.getType() == null}"></option>
+                        <option value="new"
+                                th:selected="${thisItem.getType() != null && thisItem.getType().equals('new')}">new</option>
+                        <option value="recommended"
+                                th:selected="${thisItem.getType() != null && thisItem.getType().equals('recommended')}">recommended</option>
+                    </select>
+             </div>
+                <div class="col-md-6">
+                    <label class="m-2 p-2 badge badge-secondary">Характеристика</label>
+                    <select class="form-control m-2 character-name" name="character-name">
+                        <option value="-1">Оберіть характеристику</option>
+                        <option th:each="characterName : ${thisItem.getCharacterValue()}"
+                                th:text="${characterName.getCharacter().getName()}"
+                                th:value="${characterName.getCharacter().getId()}"></option>
+                    </select>
+                    <div class="character-value-wrapper">
+                        <!-- CODE -->
+                    </div>
+                    <div class="text-right">
+                        <button type="button" class="btn btn-primary m-2" data-toggle="modal" data-target="#deleteCharacter">Видалити характеристику</button>
+                        <button type="button" class="btn btn-primary m-2" data-toggle="modal" data-target="#addCharacter">Додати характеристику</button><br>
+                    </div>
+                    <label class="m-2 p-2 badge badge-secondary">Фото</label>
+                    <div class="custom-file m-2">
+                        <input type="file" class="custom-file-input photoFile" id="photoFile"
+                               accept="image/*" th:value="${thisItem.getImageUrl()}" name="image">
+                        <label class="custom-file-label photoFileLabel" for="photoFile"
+                               th:text="${thisItem.getImageUrl()}" style="overflow: hidden">Оберіть файл</label>
+                    </div>
+                    <textarea class="form-control m-2" style="min-height: 200px;"
+                              th:text="${thisItem.getDescription()}" name="description"></textarea>
+                    <div class="text-right">
+                        <button type="button" class="btn btn-success m-2" data-toggle="modal" data-target="#addBrandNewItem">Додати новий товар</button>
+                       <button type="submit" class="btn btn-success m-2">Змінити</button>
+
+                    </div>
+                </div>
+            </div>
+            </form>
+
+            <!-- Modal for add new character -->
+            <div class="modal fade" id="addCharacter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Додати нову характеристику</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form th:action="'/admin/editor/'+ ${thisItem.getId()} + '/add-character'" method="POST">
+                            <div class="modal-body">
+                                <select class="form-control m-2 modal-character-name" name="character-name-new">
+                                    <option value="-1">Оберіть характеристику</option>
+                                    <option th:each="character : ${characters}"
+                                            th:text="${character.getName()}"
+                                            th:value="${character.getId()}"></option>
+                                </select>
+                                <div class="new-value-wrapper">
+                                    <!-- CODE -->
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрити</button>
+                                <button type="submit" class="btn btn-primary btn-modal-add" disabledx>Додати</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal remove character -->
+            <div class="modal fade" id="deleteCharacter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalTitle">Видалити характеристику</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form th:action="'/admin/editor/'+ ${thisItem.getId()} + '/delete-character'" method="POST">
+                            <div class="modal-body">
+                                <select class="form-control m-2 modal-character-name" name="character-name-new">
+                                    <option th:each="characterValue : ${thisItem.getCharacterValue()}"
+                                            th:text="${characterValue.getCharacter().getName()}"
+                                            th:value="${characterValue.getCharacter().getId()}"></option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрити</button>
+                                <button type="submit" class="btn btn-primary">Видалити</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal add brand-new item -->
+            <div class="modal fade" id="addBrandNewItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="brandNewItemTitle">Додати новий товар</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="/admin/editor/add-new-item" enctype="multipart/form-data" method="POST">
+                            <div class="modal-body">
+                                <select class="form-control m-2" name="subname">
+                                    <option th:each="subcatalog : ${subcatalogs}"
+                                            th:text="${subcatalog.getSubname()}"
+                                            th:value="${subcatalog.getSubname()}"></option>
+                                </select>
+                                <label class="m-2 p-2 badge badge-secondary">Назва</label>
+                                <input class="form-control m-2" type="text" placeholder="Назва" name="name"required>
+                                <label class="m-2 p-2 badge badge-secondary">Ціна</label>
+                                <input class="form-control m-2" type="number" placeholder="Ціна" name="price" required>
+                                <label class="m-2 p-2 badge badge-secondary">Кількість</label>
+                                <input class="form-control m-2" type="number" placeholder="Кількість" name="amount" required>
+                                <label class="m-2 p-2 badge badge-secondary">Тип</label>
+                                <select class="form-control m-2" name="type">
+                                    <option value="" selected></option>
+                                    <option value="new">new</option>
+                                    <option value="recommended">recommended</option>
+                                </select>
+                                <label class="m-2 p-2 badge badge-secondary">Фото</label>
+                                <div class="custom-file m-2">
+                                    <input type="file" class="custom-file-input photoFile" accept="image/*" name="image">
+                                    <label class="custom-file-label photoFileLabel" for="photoFile" style="overflow: hidden">Оберіть файл</label>
+                                </div>
+                                <label class="m-2 p-2 badge badge-secondary">Опис</label>
+                                <textarea class="form-control m-2" style="min-height: 200px;" name="description"></textarea>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрити</button>
+                                <button type="submit" class="btn btn-primary">Додати товар</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-center justify-content-center">
+                <div class="card">
+                    <div class="content text-center">
+                        <a th:href="'/shop/'+${thisItem.getId()}" class="text-decoration-none text-dark" >
+                            <img class="img-item mr-auto ml-auto" th:src="${thisItem.getImageUrl()}" style="height: 300px !important; width: 240px !important;">
+                            <div class="card-body">
+                                <h5 class="card-text text-center" th:text="${thisItem.getName()}">-- ITEM NAME --</h5>
+                                <legend></legend>
+                                <h5 class="card-text text-center" th:text="${thisItem.getPrice()}+' грн'">-- ITEM PRICE --</h5>
+                            </div>
+                        </a>
+                        <button th:data-name="${thisItem.getName()}"
+                                th:data-price="${thisItem.getPrice()}"
+                                th:data-img="${thisItem.getImageUrl()}"
+                                th:data-id="${thisItem.getId()}"
+                                class="btn btn-primary item-add w-100"
+                                disabled>Замовити</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Footer -->
+    <footer id="footer" class="site-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-sm-12 col-md-6">
+                    <h6>Про нас</h6>
+                    <p class="text-justify">HookahShop магазин кальянів, комплектуючих, аксесуарів,
+                        тощо.<br>
+                        Кальян — прилад для куріння, що дозволяє фільтрувати і охолоджувати дим, що
+                        вдихається. Роль фільтра відіграє посудина з водою, вином чи іншою рідиною. У
+                        посудину вставлена курильна
+                        чашка,
+                        поєднана з трубкою, кінець якої йде під воду. Вище рівня води з посудини
+                        відходить ще одна трубка, до якої
+                        прикріплений
+                        цибух. При курінні в посудині кальяну створюється негативний тиск, завдяки чому
+                        дим піднімається крізь
+                        рідину
+                        і через
+                        трубку з цибухом потрапляє в легені курця.
+                    </p>
+                </div>
+
+                <div class="col-lg-3 col-xs-12 col-md-3">
+                    <h6>Категорії</h6>
+                    <ul class="footer-links">
+                        <li><a href="/shop?type=Кальяни">Кальяни</a></li>
+                        <li><a href="/shop?type=Колби">Комплектуючі</a></li>
+                        <li><a href="/shop?type=Регулятор жару">Аксесуари</a></li>
+                        <li><a href="/shop?type=Уголь">Матеріали</a></li>
+                        <li><a href="/personal">Особистий кабінет</a></li>
+                        <li><a href="/order">Оформлення замовлення</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12">
+                    <style>
+                        #map {
+                            height: 100%;
+                            width: 100%;
+                        }
+                    </style>
+                    <div id="map"></div>
+                    <script>
+                        function initMap() {
+                            var uluru = { lat: 50.381426, lng: 30.496706 };
+                            var map = new google.maps.Map(
+                                document.getElementById('map'), { zoom: 17, center: uluru });
+                            var marker = new google.maps.Marker({ position: uluru, map: map });
+                        }
+                    </script>
+                    <script async defer
+                            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARBiMgr_hoUyZI4psDdTJ06cpraxNse3Y&callback=initMap">
+                    </script>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row mt-4">
+                <div class="col-md-8 col-sm-4 col-xs-12">
+                    <p class="copyright-text">Copyright &copy; 2020 All Rights Reserved.</p>
+                </div>
+
+                <div class="col-md-4 col-sm-4 col-xs-12">
+                    <ul class="social-icons">
+                        <li><a class="facebook" href="#"><i class="fab fa-facebook"></i></a></li>
+                        <li><a class="twitter" href="#"><i class="fab fa-twitter"></i></a></li>
+                        <li><a class="dribbble" href="#"><i class="fab fa-dribbble"></i></a></li>
+                        <li><a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+</body>
+</html>
