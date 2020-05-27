@@ -2,7 +2,7 @@
 
 Дипломний проект по закінченню курсу <a href="https://prog.kiev.ua/">Java Pro в prog.kiev.ua</a>. <br>
 Посилання на сам <a href="http://hookah-shop.herokuapp.com/">проект</a><br>
-Відповідальний за front-end та back-end <a href="https://www.linkedin.com/anatoliy-taran">Anatoliy Taran</a>
+Відповідальний за front-end та back-end <a href="https://www.linkedin.com/in/anatoliy-taran/">Anatoliy Taran</a>
 
 ### ⚙️ Tech Stack 
 
@@ -42,4 +42,4 @@
 Використовуйте дані соціальні мережі для зв'язку зі мною 😉
 - <a href="https://www.instagram.com/anta4bl/">Instagram</a>
 - <a href="https://t.me/nules_dev">Telegram</a>
-- <a href="https://www.linkedin.com/anatoliy-taran">LinkedIn</a>
+- <a href="https://www.linkedin.com/in/anatoliy-taran/">LinkedIn</a>
