@@ -37,7 +37,7 @@ public class OnStartDataConfig extends GlobalMethodSecurityConfiguration {
 
 
             // USER #1
-            ShopUser user = new ShopUser(1L, "Петро","opanasenk000@ukr.net", passwordEncoder.encode("user"),
+            ShopUser user = new ShopUser(1L, "Петро","user@ukr.net", passwordEncoder.encode("user"),
                     Role.USER, null,null,null, null);
             service.addUser(user);
             // CART FOR USER #1
@@ -48,7 +48,7 @@ public class OnStartDataConfig extends GlobalMethodSecurityConfiguration {
                     null,null,null, null,null, cart, user, null, null));
 
             // USER #2 ADMIN
-            ShopUser user1 = new ShopUser(2L, "Адміністратор", "nedbail00098@gmail.com", passwordEncoder.encode("admin"),
+            ShopUser user1 = new ShopUser(2L, "Адміністратор", "admin@gmail.com", passwordEncoder.encode("admin"),
                     Role.ADMIN, null, null, null, null);
             service.addUser(user);
             // CART FOR USER #2
